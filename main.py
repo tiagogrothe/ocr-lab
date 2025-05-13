@@ -15,13 +15,19 @@ openai.api_key = os.getenv("OPENAI_API_KEY", "SUA_CHAVE_AQUI")
 @app.route("/ocr", methods=["POST"])
 def ocr():
     try:
+        if 'file' not in request.files:
+            print("❌ Nenhum arquivo enviado.")
+            return jsonify({"error": "Arquivo não enviado"}), 400
+
         file = request.files['file']
+        print("📥 Arquivo recebido:", file.filename)
+
         file_bytes = file.read()
+        print("📄 Tamanho do arquivo recebido:", len(file_bytes))
 
         try:
             images = convert_from_bytes(file_bytes, first_page=1, last_page=1)
-        except Exception as img_err:
-            print("Erro ao converter PDF:", img_err)
+        except:
             image = Image.open(io.BytesIO(file_bytes))
             images = [image]
 
@@ -29,10 +35,11 @@ def ocr():
         for img in images:
             text += pytesseract.image_to_string(img, lang='por') + '\n'
 
+        print("✅ OCR executado com sucesso.")
         return jsonify({"raw_text": text.strip()}), 200
 
     except Exception as e:
-        print("❌ Erro geral no OCR:", str(e))
+        print("❌ Erro no OCR:", str(e))
         return jsonify({"error": str(e)}), 500
 
 @app.route("/clean", methods=["POST"])
