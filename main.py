@@ -16,18 +16,19 @@ openai.api_key = os.getenv("OPENAI_API_KEY", "SUA_CHAVE_AQUI")
 def ocr():
     try:
         if 'file' not in request.files:
-            print("❌ Nenhum arquivo enviado.")
-            return jsonify({"error": "Arquivo não enviado"}), 400
+            print("❌ Nenhum arquivo com key 'file' foi enviado!")
+            return jsonify({"error": "Arquivo não enviado com key 'file'"}), 400
 
         file = request.files['file']
-        print("📥 Arquivo recebido:", file.filename)
+        print("📂 Arquivo recebido:", file.filename)
 
         file_bytes = file.read()
-        print("📄 Tamanho do arquivo recebido:", len(file_bytes))
+        print("📦 Tamanho do arquivo:", len(file_bytes), "bytes")
 
         try:
             images = convert_from_bytes(file_bytes, first_page=1, last_page=1)
-        except:
+        except Exception as conv_err:
+            print("⚠️ Falha ao converter PDF para imagem com pdf2image. Tentando com PIL...")
             image = Image.open(io.BytesIO(file_bytes))
             images = [image]
 
