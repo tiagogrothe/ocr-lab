@@ -20,7 +20,8 @@ def ocr():
 
         try:
             images = convert_from_bytes(file_bytes, first_page=1, last_page=1)
-        except:
+        except Exception as img_err:
+            print("Erro ao converter PDF:", img_err)
             image = Image.open(io.BytesIO(file_bytes))
             images = [image]
 
@@ -31,6 +32,7 @@ def ocr():
         return jsonify({"raw_text": text.strip()}), 200
 
     except Exception as e:
+        print("❌ Erro geral no OCR:", str(e))
         return jsonify({"error": str(e)}), 500
 
 @app.route("/clean", methods=["POST"])
