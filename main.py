@@ -22,13 +22,11 @@ def ocr():
         file = request.files['file']
         print("📂 Arquivo recebido:", file.filename)
 
-        file_bytes = file.read()
-        print("📦 Tamanho do arquivo:", len(file_bytes), "bytes")
+        file_bytes = file.read()  # ← Faltava isso
 
         try:
             images = convert_from_bytes(file_bytes, first_page=1, last_page=1)
-        except Exception as conv_err:
-            print("⚠️ Falha ao converter PDF para imagem com pdf2image. Tentando com PIL...")
+        except:
             image = Image.open(io.BytesIO(file_bytes))
             images = [image]
 
