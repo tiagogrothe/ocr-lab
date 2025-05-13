@@ -1,0 +1,5 @@
+Flask
+openai
+pdf2image
+pytesseract
+Pillow
